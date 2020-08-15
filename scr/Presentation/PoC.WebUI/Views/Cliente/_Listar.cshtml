@@ -1,0 +1,39 @@
+﻿@model IList<PoC.WebUI.ViewModel.ClienteViewModel>
+
+@if (Model != null && Model.Count() > 0)
+{
+    <table id="dataTable" class="table table-striped table-bordered table-hover">
+        <thead style="background-color: #f1f2f3;">
+            <tr>
+                <th class="col-sm-1">Id</th>
+                <th class="col-sm-6">Nome</th>
+                <th class="col-sm-5">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Nome</td>
+                    <td>
+                        <a id="btnEditar" href="#" class="btn btn-info btn-sm" data-toggle="modal" data-target="#view-modal" title="Editar" onclick="detalhar('@item.Id', '@item.Nome')">
+                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                            Editar
+                        </a>
+                        @*<a id="btnProduto" href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#produto-modal" title="Produtos" style="background-color: #2057f2;">
+                            <i class="fa fa-list"></i> Produtos
+                        </a>*@
+                        <a id="btnProduto" href="@Url.Action("Produtos", "Cliente", new { idCliente = item.Id })" class="btn btn-primary btn-sm" title="Produtos" style="background-color: #2057f2;">
+                            <i class="fa fa-list"></i> Produtos
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div role="alert" class="alert alert-warning"><strong>Nenhum cliente encontrado!</strong></div>
+}

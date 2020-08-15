@@ -1,0 +1,184 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR" class="no-js">
+<head>
+    <meta charset="utf-8" />
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title - PoC</title>
+    @Styles.Render("~/Content/css/bootstrap")
+    @Styles.Render("~/Content/css/sweetalert")
+    @Styles.Render("~/Content/css")
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/vendor/modernizr")
+</head>
+<body class="layout-fixed">
+    @{
+        var TitleMessage = ViewData["Title"];
+        var ReturnMessageOk = ViewBag.ReturnMessageOk;
+        var ReturnMessageError = ViewBag.ReturnMessageError;
+    }
+
+    <!-- Main container-->
+    <div class="app-container">
+        <!-- top navbar-->
+        <header class="bg-primary">
+            <!-- START Top Navbar-->
+            <nav role="navigation" class="navbar topnavbar">
+                <!-- START navbar header-->
+                <div class="navbar-header" @*style="width: 240px;"*@>
+                    <a href="@Url.Action("Index", "Home")" class="navbar-brand" style="float: inherit; width: 210px;">PoC</a>
+
+                    <!-- Mobile buttons-->
+                    <div class="mobile-toggles">
+                        <!-- Button to show/hide the sidebar on mobile. Visible on mobile only.--><a href="" class="sidebar-toggle"><em class="fa fa-navicon"></em></a>
+                        <!-- Button to show/hide the header menu on mobile. Visible on mobile only.--><a href="#nav-collapse" data-toggle="collapse" class="menu-toggle hidden-material"><em class="fa fa-ellipsis-v fa-fw"></em></a>
+                    </div>
+                </div>
+                <!-- END navbar header-->
+            </nav>
+            <!-- END Top Navbar-->
+        </header>
+        <!-- Sidebar-->
+        <aside class="bg-white">
+            <!-- START Sidebar-->
+            <div class="sidebar-wrapper">
+                <div data-ui-sidebar="" class="sidebar">
+                    <div class="sidebar-nav">
+                        <ul class="nav">
+                            <!-- Iterates over all sidebar items-->
+                            <li class="active">
+                                <a href="" title="Cadastro" data-ripple=""><em class="sidebar-item-caret fa pull-right fa-angle-right"></em><em class="sidebar-item-icon icon-book"></em><span>Cadastro</span></a>
+                                <ul class="nav sidebar-subnav">
+                                    <li class="sidebar-subnav-header"><a><em class="sidebar-item-icon fa fa-angle-right"></em>Cadastro</a></li>
+                                    <li><a href="@Url.Action("Index", "Cliente")" title="Clientes" data-ripple=""><em class="sidebar-item-icon"></em><span>Clientes</span></a></li>
+                                    <li><a href="@Url.Action("Index", "Produto")" title="Produtos" data-ripple=""><em class="sidebar-item-icon"></em><span>Produtos</span></a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- END Sidebar-->
+        </aside>
+
+        <section>
+            <!-- Content-->
+            <div class="app">
+                @RenderBody()
+            </div>
+        </section>
+
+        <!-- Page footer-->
+        <footer><span>&copy; @DateTime.Now.Year - PoC</span></footer>
+    </div>
+
+    <div id="loading" class="modal-backdrop in overlay-carregando" style="display:block; text-align: center;">
+        <div class="center" style="padding-top: 20%;">
+            <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+            <span class="sr-only">Loading...</span>
+            <label id="lblLoading" class=""> Aguarde...</label>
+        </div>
+    </div>
+
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/vendor")
+    @Scripts.Render("~/bundles/plugins")
+    @Scripts.Render("~/bundles/main")
+    @Scripts.Render("~/bundles/mascara")
+    @Scripts.Render("~/bundles/sweetalert")
+
+    <script>
+
+        $(document).ready(function () {
+            $("html, body").animate({ scrollTop: 0 }, 100);
+
+            var TitleMessage = '@TitleMessage';
+            var ReturnMessageOk = '@ReturnMessageOk';
+            var ReturnMessageError = '@ReturnMessageError';
+
+            if (ReturnMessageOk) {
+                swal({
+                    title: TitleMessage,
+                    text: ReturnMessageOk,
+                    type: "success"
+                });
+            }
+            else if (ReturnMessageError) {
+                swal({
+                    title: TitleMessage,                    
+                    text: ReturnMessageError.replace("&#xE1;", "á").replace("&#225;", "á").replace("&#227;", "ã").replace("&#237;", "í"),
+                    type: "warning",
+                    showCancelButton: false,                    
+                    confirmButtonText: "OK",
+                    closeOnConfirm: true,
+                    closeOnCancel: true
+                },
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            window.location.href = '../' + TitleMessage.replace("s", "");
+                        }
+                });
+            }
+        });
+
+        window.onload = function () {
+            $("#loading").hide();
+            limpaModal();
+        };
+
+        $("form input").keydown(function (e) {
+            if (e.keyCode == 13) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        $(".container").find('input[type="text"], input[type="search"], input[type="email"], textarea, select').each(function () {
+            this.style.textTransform = 'uppercase';
+        }).keyup(function () {
+            var inputPosition = this.selectionStart;
+            this.value = this.value.toUpperCase();
+            this.selectionStart = this.selectionEnd = inputPosition;
+        });
+
+        $(".modal").find('input[type="text"], input[type="search"], input[type="email"], textarea, select').each(function () {
+            this.style.textTransform = 'uppercase';
+        }).keyup(function () {
+            var inputPosition = this.selectionStart;
+            this.value = this.value.toUpperCase();
+            this.selectionStart = this.selectionEnd = inputPosition;
+        });
+
+        $("#view-modal").on("hidden.bs.modal", function () {
+            limpaModal();
+        });
+
+        function limpaModal() {
+            $("#view-modal #Id").val('0');
+
+            $("#view-modal").find('input[type="text"], input[type="email"], textarea, select').each(function () {
+                this.value = '';
+            });
+
+            $("#view-modal").find('label').each(function () {
+                if (this.className == 'error') {
+                    this.html = '';
+                    this.innerHTML = '';
+                    this.innerText = '';
+                }
+            });
+
+            $("#view-modal").find('span').html('');
+
+            var elements = document.getElementsByClassName('form-control error');
+            while (elements.length > 0) {
+                elements[0].classList.remove('error');
+            }
+        };
+    </script>
+
+    @RenderSection("styles", required: false)
+    @RenderSection("scripts", required: false)
+</body>
+</html>

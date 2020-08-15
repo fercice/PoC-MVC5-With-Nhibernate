@@ -1,0 +1,125 @@
+﻿@model IList<PoC.WebUI.ViewModel.CompraViewModel>
+@{
+    ViewBag.Title = "Produtos";
+
+    var Cliente = ViewData["Cliente"] as PoC.WebUI.ViewModel.ClienteViewModel;
+    var ListaProdutos = ViewData["ListaProdutos"] as IList<PoC.WebUI.ViewModel.ProdutoViewModel>;
+
+    var TitleMessage = ViewData["Title"];
+    var CompraReturnMessageOk = ViewBag.CompraReturnMessageOk;
+    var CompraMessageDeletedOk = ViewBag.CompraMessageDeletedOk;
+    var CompraReturnMessageError = ViewBag.CompraReturnMessageError;
+}
+
+<div class="container container-lg">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <div class="panel panel-inverse center-block">
+                        <div class="panel-heading" style="font-size: 20px; background-color: cornflowerblue">Lista de Produtos do Cliente: @Cliente.Nome</div>
+                        <div class="panel-body">
+                            <div class="row">
+                                @Html.Hidden("ProdutoSelecionado")
+                                <div class="col-sm-8">
+                                    <div class="form-group">
+                                        @Html.DropDownList("ddlProdutos", new SelectList(@ListaProdutos, "Id", "Nome"), "SELECIONE UM PRODUTO PARA ADICIONAR", new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <a id="btnAdicionar" href="#" onclick="adicionarProduto()"
+                                       class="btn btn-primary btn-sm">
+                                        <i class="fa fa-plus"></i> Adicionar Produto
+                                    </a>
+                                </div>
+                                <div class="col-sm-2" style="text-align: right;">
+                                    <a id="btnFechar" href="@Url.Action("Index", "Cliente")" class="btn btn-default btn-sm"><i class="fa fa-user"></i> Voltar para Clientes</a>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div id="lista">
+                                        @Html.Partial("_ListarProdutos", Model)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var TitleMessage = '@TitleMessage';
+            var CompraReturnMessageOk = '@CompraReturnMessageOk';
+            var CompraReturnMessageError = '@CompraReturnMessageError';
+            var idCliente = '@Cliente.Id';
+
+            if (CompraReturnMessageOk) {
+                swal({
+                    title: TitleMessage,
+                    text: CompraReturnMessageOk.replace("&#xE1;", "á").replace("&#225;", "á"),
+                    type: "success",
+                    showCancelButton: false,
+                    confirmButtonText: "OK",
+                    closeOnConfirm: true,
+                    closeOnCancel: true
+                },
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            window.location.href = '../Cliente/Produtos?idCliente=' + idCliente;
+                        }
+                });
+            }
+            else if (CompraReturnMessageError) {
+                swal({
+                    title: TitleMessage,
+                    text: CompraReturnMessageError.replace("&#xE1;", "á").replace("&#225;", "á").replace("&#227;", "ã").replace("&#237;", "í"),
+                    type: "warning",
+                    showCancelButton: false,
+                    confirmButtonText: "OK",
+                    closeOnConfirm: true,
+                    closeOnCancel: true
+                },
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            window.location.href = '../Cliente/Produtos?idCliente=' + idCliente;
+                        }
+                });
+            }
+        });
+
+        function adicionarProduto() {
+            var idCliente = '@Cliente.Id';
+            var idProduto = $("#ddlProdutos option:selected").val();
+
+            if (idProduto) {
+                window.location.href = '../' + "Cliente/AdicionarProduto?idCliente=" + idCliente + "&idProduto=" + idProduto;
+            }
+        };
+
+        function setarRemoverProdutoRemover(idProduto) {
+            var idCliente = '@Cliente.Id';
+            $("#ProdutoSelecionado").val(idProduto);
+
+            swal({
+                title: '@ViewData["Title"]',
+                text: "Deseja realmente desassociar o Produto?",
+                type: "warning",
+                showCancelButton: true,
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Sim, desejo excluir!",
+                closeOnConfirm: false
+            }, function () {
+                $('.sweet-alert').find('.sa-button-container').find('.sa-confirm-button-container').find('button').text('Excluindo...');
+                window.location.href = '../' + "Cliente/RemoverProduto?idCliente=" + idCliente + "&idProduto=" + $("#ProdutoSelecionado").val();
+            });
+        };
+    </script>
+}

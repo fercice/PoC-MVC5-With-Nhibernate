@@ -1,0 +1,105 @@
+﻿@model IList<PoC.WebUI.ViewModel.ClienteViewModel>
+@{
+    ViewBag.Title = "Clientes";
+}
+
+<div class="container container-lg">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <div class="panel panel-inverse center-block">
+                        <div class="panel-heading" style="font-size: 20px; background-color: cornflowerblue">Clientes</div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-sm-10">
+                                    <div class="form-group row" style="margin-bottom: 0px;">
+                                        <div id="lblPesquisar" class="col-sm-1 d-none d-sm-none d-md-none d-lg-block d-xl-block">
+                                            <label class="col-form-label" style="margin-top: 10px;">Pesquisar</label>
+                                        </div>
+                                        <div class="col-sm-10">
+                                            <input type="search" id="textSearch" class="form-control form-control-sm" aria-controls="dataTable" maxlength="150" autofocus>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2" style="text-align: right;">
+                                    <a id="btnAdicionar" href="#" data-toggle="modal" data-target="#view-modal" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Incluir</a>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div id="lista">
+                                        @Html.Partial("_Listar", Model)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_IncluirOuAlterar", new PoC.WebUI.ViewModel.ClienteViewModel())
+
+@section styles{
+    @Styles.Render("~/Content/css/dataTables")
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/dataTables")
+
+    <script type="text/javascript">
+        var table = $('#dataTable').DataTable({
+            language: {
+                url: '/Scripts/dataTables/dataTables.pt-br.lang.json',
+                select: {
+                    rows: {
+                        _: "%d linhas selecionadas",
+                        0: "Nenhuma linha selecionada",
+                        1: "1 linha selecionada"
+                    }
+                }
+            },
+            select: {
+                style: 'single'
+            },
+            columnDefs: [
+                { searchable: false, targets: [0] }
+            ],
+            order: [
+                [1, "asc"]
+            ],
+            keys: {
+                keys: [
+                    13 /* ENTER */,
+                    38 /* UP */,
+                    40 /* DOWN */
+                ]
+            },
+            dom: '<"html5buttons"B>lTgtp',
+            paging: false,
+            pageLength: 10,
+            buttons: []
+        });
+
+        $(document).ready(function () {
+
+            $('#textSearch').keyup(function () {
+                $('#dataTable tbody').show();
+                table.search($(this).val()).draw();
+            });
+        });
+
+        $("#view-modal").on("shown.bs.modal", function () {
+            $("#view-modal #Nome").focus();
+        });
+
+        function detalhar(id, nome) {
+            $("#view-modal #Id").val(id);
+            $("#view-modal #Nome").val(nome);
+        };
+    </script>
+}
